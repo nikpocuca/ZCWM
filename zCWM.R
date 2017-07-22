@@ -4,7 +4,7 @@
 # June 13th - 2017 
 # Creator: Nik Pocuca 
 # The following is code written using two libraries and their respective dependencies.
-# If you had not yet installed them, please do so now, please run the following function. 
+# If you had not yet installed them, please do so now, run the following function.
 
 initFunctions <- function(){
 
@@ -16,7 +16,7 @@ initFunctions <- function(){
 
 # initFunctions()
 
-# IMPORTATION OF LIBRARIES. 
+# IMPORT OF LIBRARIES.
 library(flexCWM)
 library(pscl)
 
@@ -56,7 +56,10 @@ create24 <- function() {
   c_24 <<- CONTRACTS.f[CONTRACTS.f$Region=="R24",]
 }
 
-#CWM Addons. Not found in flexCWM package
+#CWM Addons, not found in CWM package
+
+
+
 getFitted <- function(object, ...){
   best <- getBestModel(object,...)
   obj  <- best$models[[1]]
