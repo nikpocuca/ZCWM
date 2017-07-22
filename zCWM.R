@@ -137,30 +137,6 @@ zcwm <- function(data, np){
   
 
   
-  # RESTRUCTURING COEFFICIENTS
-  #| =============================================================================================|
-  #| RETURN VECTORS FUNCTION                                                                      |
-  #| Nik Pocuca July 19th - 2017                                                                  |
-  #| Returns glm vectors in the form of a dataframe.                                              |
-  #| =============================================================================================|
-  returnVectors <- function(cwmGLM){
-  
-    # Get names 
-    vNames <-  names(cwmGLM$GLMComp.1$coefficients)
-  
-    
-                                      # Placeholder dataframe. 
-                                      dataPlaceholder <-  data.frame()  
-                                      for(i in cwmGLM){
-                                      dataPlaceholder <- rbind(dataPlaceholder, i$coefficients)
-                                      }
-                                
-  
-  # Set Names for dataframe
-  colnames(dataPlaceholder) <- vNames
-  
-  return(dataPlaceholder)} # END OF RETURN VECTORS FUNCTION 
-  #| =============================================================================================|
 
   poissonVectors <- returnVectors(pois_coef)
   binomialVectors <- returnVectors(bin_coef)
@@ -171,107 +147,7 @@ zcwm <- function(data, np){
   
   # Message: July 19th 2017
   # Create a function that will generate dataspaces, with their respective vectors based on the lexicon. 
-  
-  # CLASS CREATION OF LEXICON VECTORS
-  #| =============================================================================================|
-  #| LEXICON VECTOR CLASS                                                                         |
-  #| Nik Pocuca July 21th - 2017                                                                  |
-  #| Definition of a Lexicon vector class, an LVC is a class that contains two vectors            |
-  #| and the associated lexicon.                                                                  |
-  #| =============================================================================================|
-  lexVector <- setClass(Class = "Lexicon Vector",
-                        slots = c(lexicon = "character",pVector = "vector",bVector = "vector"))
-  
-  #Set a method for the class
-  setMethod("$", "Lexicon Vector", function(x, name) {
-              slot(x, name)
-            })
-  # END OF LEXICON VECTOR CLASS 
-  #| =============================================================================================|
-  
-  # GENERATING VECTOR OBJECTS
-  #| =============================================================================================|
-  #| GENVEC FUNCTION                                                                              |
-  #| Nik Pocuca July 20th - 2017                                                                  |
-  #| Takes in a lexicon, generates an object   with names as numbers of the corresponding vectors |
-  #| =============================================================================================|
-  genVec <- function(tag, pVec, bVec){
-        vSplitTag <- unlist(strsplit(tag, ""))
-        
-        vecObject <- lexVector(lexicon = tag, 
-                              pVector = t(pVec[vSplitTag[1],]),
-                              bVector = t(pVec[vSplitTag[2],]))
-   
  
-    
-    
-  return(vecObject)
-  } # END OF GENVEC FUNCTION
-  #| =============================================================================================|
-  
-  # GENERATING DATASPACES
-  #| =============================================================================================|
-  #| GENSPACE FUNCTION                                                                            |
-  #| Nik Pocuca July 20th - 2017                                                                  |
-  #| Creates a data space of each cut in an object so you can pass in the data, and vectors.      |
-  #| =============================================================================================|
-  genData <- function(dSpace, pVectors, bVectors){
-      lexicon <- as.character(unique(data_space$lex))
-      
-      genObject <- c()
-      for(i in lexicon){
-        
-                        genVecObj <- genVec(tag = i, 
-                                     pVec = pVectors,
-                                     bVec = bVectors)
-                        
-                        
-                        
-                        # END OF FOR LOOP
-                        genObject <- c(genObject,genVecObj)
-      }
-    
-      
-      
-      
-      genAns <- c()
-      for(i in unique(data_space$partitions)){
-
-    
-      genAns <- c(genAns ,assign(paste('subspace',i,sep=''), 
-             subspace(data= data_space[data_space$partitions == i,], vectors = genObject[[i]] ) #assigning value
-             ))
-      
-        
-      }
-      
-    #  print(genAns)
-  return(genAns)
-  } #END OF GENSPACE FUNCTION 
-  #| =============================================================================================|
-  
-  
-  
-  # CLASS CREATION OF DATA SPACE
-  #| =============================================================================================|
-  #| DATA SPACE CLASS                                                                      |
-  #| Nik Pocuca July 21th - 2017                                                                  |
-  #| Definition of entire data space, will contain subclass of a data space which conatins k      |
-  #| partitions.                                                                                  |
-  #|                                                                                              |
-  #| =============================================================================================|
-  PSPACE <- setClass(Class = "PSPACE",
-                     slots = c(
-                     k = "numeric",
-                     spaces = "list"
-                     ))
-  
-  
-  
-  # SETTING METHOD FOR ACCESSING INFORMATION
-  setMethod("$", "PSPACE", function(x, name) { 
-    slot(x, name)
-  })
   
   
   # Message:  July 21st, 2017 - Nik Pocuca 
@@ -287,30 +163,6 @@ zcwm <- function(data, np){
   
   
   
-  
-  # CLASS CREATION OF SUBSPACE
-  #| =============================================================================================|
-  #| SUBSPACE CLASS                                                                               |
-  #| Nik Pocuca July 21th - 2017                                                                  |
-  #| Definition of subspace of dataspace class. Each subspace conatins the dataset with the       |
-  #| referenced partition, and a coupled lexicon vector.                                          |
-  #|                                                                                              |
-  #| =============================================================================================|
-  subspace <- setClass(Class = "subspace",
-                     slots = c(
-                       data = "data.frame",
-                       vectors = "Lexicon Vector"
-                     ))
-  
-  
-  
-  # SETTING METHOD FOR ACCESSING INFORMATION
-  setMethod("$", "subspace", function(x, name) { 
-    slot(x, name)
-  })
-  
-  
-  #| =============================================================================================|
   
   
   
