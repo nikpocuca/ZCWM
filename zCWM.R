@@ -22,6 +22,8 @@ library(pscl)
 
 
 load_book <- function(){
+    
+  CONTRACTS.f <- read.csv(file = "CONTRACTS.csv")
   #BOOK#
   # factor(CONTRACTS.f$BRAND=="F",labels=c("other","F"))
   CONTRACTS.f$powerF <- factor(1*(CONTRACTS.f$POWER%in%letters[4:6])+ 2*(CONTRACTS.f$POWER%in%letters[7:8]),labels=c("other","DEF","GH"))
@@ -104,7 +106,10 @@ zcwm <- function(data, formulaZP, np){
   data.z$NB <<- as.integer(data.z$NB <= 0) 
   
   
-  print('Beginning Partitioning using Cwm')
+  cat('Beginning Partitioning using Cwm')
+  cat('--------------------------------')
+  cat(' ')
+  
   #First Partition of space. (Poisson) 
   
   dclareCWM <- function(){
@@ -120,6 +125,8 @@ zcwm <- function(data, formulaZP, np){
   #Declare global for second partition. 
   declare_g(data.z)
   #Second Partition of space. (Binomial)
+  
+  
   cwm_binomial <<- cwm(formulaY = formulaZP,
                        data = data.z,
                        Xnorm = cbind(DriverAge,CarAge,Density),
@@ -129,7 +136,12 @@ zcwm <- function(data, formulaZP, np){
   
   }
   
-  #dclareCWM()
+  
+  
+  dclareCWM()
+  
+  
+  
   nPara <- length(getParGLM(cwm_binomial)[1])
   
   c_pois <<- getCluster(cwm_poisson)
@@ -185,6 +197,8 @@ zcwm <- function(data, formulaZP, np){
   print(paste("Now attempting maximization number",counter))
   print("---------------------------")
     
+  
+  
     
  tryCatch({    holdModel <-  z_mk1(formula = formulaZP, 
           zipModelE = i,
@@ -198,6 +212,9 @@ zcwm <- function(data, formulaZP, np){
   assign(paste('zeroNikT', counter,sep=''), holdModel)
  },error = function(){})
   
+  
+  
+  
   }
   
   
@@ -209,10 +226,16 @@ zcwm <- function(data, formulaZP, np){
 } 
 #End of zcwm function
 
+
+
+
+runZ <- function(){
+
 zeroTEST <- zcwm(data = c_24,
              formulaZP = fregzi,
-             3)
+             np = 3)
 
+}
 
 
 
@@ -256,79 +279,6 @@ zeroTEST <- zcwm(data = c_24,
 
 
 #fit_cuts <<- cbind(fit,fit_z)
-
-
-
-
-zeroTEST <- zcwm(data = c_24,
-                 formulaZP = fregzi)
-
-
-
-
-zero_1 <- zeroinfl(formula = fregzi, 
-                   data = zipModel_1$data,
-                   dist = "poisson")
-
-
-zero_2 <- zeroinfl(formula = fregzi, 
-                   data = zipModel_2$data,
-                   dist = "poisson")
-
-
-zero_3 <- zeroinfl(formula = fregzi, 
-                   data = zipModel_3$data,
-                   dist = "poisson")
-
-zero_4 <- zeroinfl(formula = fregzi, 
-                   data = zipModel_4$data,
-                   dist = "poisson")
-
-zero_5 <- zeroinfl(formula = fregzi, 
-                   data = zipModel_5$data,
-                   dist = "poisson")
-
-zero_6 <- zeroinfl(formula = fregzi, 
-                   data = zipModel_6$data,
-                   dist = "poisson")
-
-summary(zero_1)
-summary(zero_2)
-summary(zero_3)
-summary(zero_4)
-summary(zero_5)
-summary(zero_6)
-
-#mine
-
-zeroNik_1 <- z_mk1(formula = fregzi, 
-                   zipModelE = zipModel_1,
-                   data = zipModel_1$data,
-                   dist = "poisson")
-zeroNik_2 <- z_mk1(formula = fregzi,
-                   zipModelE = zipModel_2,
-                   data = zipModel_2$data,
-                   dist = "poisson")
-zeroNik_3 <- z_mk1(formula = fregzi,
-                   zipModelE = zipModel_3,
-                   data = zipModel_3$data,
-                   dist = "poisson")
-
-zeroNik_4 <- z_mk1(formula = fregzi, 
-                   zipModelE = zipModel_4,
-                   data = zipModel_4$data,
-                   dist = "poisson")
-
-zeroNik_5 <- z_mk1(formula = fregzi, 
-                   zipModelE = zipModel_5,
-                   data = zipModel_5$data,
-                   dist = "poisson")
-
-zeroNik_6 <- z_mk1(formula = fregzi, 
-                   zipModelE = zipModel_6,
-                   data = zipModel_6$data,
-                   dist = "poisson")
-
 
 
 
