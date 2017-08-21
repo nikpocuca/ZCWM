@@ -1,0 +1,177 @@
+
+ Now attempting maximization number 1 
+--------------------------- 
+
+Call:
+zeroinfl(formula = formulaZP, data = i$data, dist = "poisson", zipModelE = i)
+
+Pearson residuals:
+    Min      1Q  Median      3Q     Max 
+-0.2099 -0.1932 -0.1875 -0.1759 19.8699 
+
+Count model coefficients (poisson with log link):
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -2.745712   0.244456 -11.232  < 2e-16 ***
+DriverAge   -0.002373   0.002394  -0.991  0.32156    
+CarAge      -0.054078   0.009305  -5.812 6.17e-09 ***
+Density      0.009222   0.003033   3.041  0.00236 ** 
+powerFDEF    0.139614   0.180266   0.774  0.43864    
+powerFGH     0.037485   0.199227   0.188  0.85076    
+
+Zero-inflation model coefficients (binomial with logit link):
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept)  0.267893   0.567488   0.472  0.63688    
+DriverAge   -0.006594   0.006030  -1.093  0.27420    
+CarAge      -0.120772   0.033919  -3.561  0.00037 ***
+Density      0.014693   0.007136   2.059  0.03950 *  
+powerFDEF   -0.121990   0.448759  -0.272  0.78575    
+powerFGH    -0.276536   0.505121  -0.547  0.58406    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Number of iterations in BFGS optimization: 55 
+Log-likelihood: -1.161e+04 on 12 Df
+
+ 
+ Now attempting maximization number 2 
+--------------------------- 
+
+Call:
+zeroinfl(formula = formulaZP, data = i$data, dist = "poisson", zipModelE = i)
+
+Pearson residuals:
+    Min      1Q  Median      3Q     Max 
+-0.2271 -0.2076 -0.2016 -0.1938 11.6313 
+
+Count model coefficients (poisson with log link):
+              Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -3.2502952  0.2088029 -15.566  < 2e-16 ***
+DriverAge    0.0011067  0.0025588   0.433    0.665    
+CarAge       0.0470946  0.0108596   4.337 1.45e-05 ***
+Density      0.0003839  0.0003547   1.082    0.279    
+powerFDEF   -0.0640207  0.1437847  -0.445    0.656    
+powerFGH    -0.1370900  0.1528390  -0.897    0.370    
+
+Zero-inflation model coefficients (binomial with logit link):
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -2.644511   0.694513  -3.808  0.00014 ***
+DriverAge    0.012467   0.006461   1.930  0.05366 .  
+CarAge       0.167573   0.021828   7.677 1.63e-14 ***
+Density     -0.000105   0.001014  -0.103  0.91759    
+powerFDEF   -0.243868   0.357643  -0.682  0.49532    
+powerFGH    -0.481121   0.395443  -1.217  0.22373    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Number of iterations in BFGS optimization: 44 
+Log-likelihood: -8817 on 12 Df
+
+ 
+ Now attempting maximization number 3 
+--------------------------- 
+
+Call:
+zeroinfl(formula = formulaZP, data = i$data, dist = "poisson", zipModelE = i)
+
+Pearson residuals:
+    Min      1Q  Median      3Q     Max 
+-0.2940 -0.2400 -0.2267 -0.2105 10.2762 
+
+Count model coefficients (poisson with log link):
+             Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -1.522905   0.397386  -3.832 0.000127 ***
+DriverAge    0.011615   0.005951   1.952 0.050954 .  
+CarAge      -0.026233   0.017450  -1.503 0.132749    
+Density     -0.000248         NA      NA       NA    
+powerFDEF   -0.702327   0.216151  -3.249 0.001157 ** 
+powerFGH    -0.312145   0.255838  -1.220 0.222432    
+
+Zero-inflation model coefficients (binomial with logit link):
+              Estimate Std. Error z value Pr(>|z|)   
+(Intercept)  0.4189341  1.3642201   0.307  0.75878   
+DriverAge    0.0515722  0.0198104   2.603  0.00923 **
+CarAge      -0.1224212  0.0769539  -1.591  0.11165   
+Density     -0.0005579         NA      NA       NA   
+powerFDEF   -1.8759740  0.6145346  -3.053  0.00227 **
+powerFGH    -0.5281513  0.6612092  -0.799  0.42443   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Number of iterations in BFGS optimization: 46 
+Log-likelihood: -1787 on 12 Df
+
+ 
+ Now attempting maximization number 4 
+--------------------------- 
+
+Call:
+zeroinfl(formula = formulaZP, data = i$data, dist = "poisson", zipModelE = i)
+
+Pearson residuals:
+    Min      1Q  Median      3Q     Max 
+-0.2844 -0.2392 -0.2236 -0.2067 13.4281 
+
+Count model coefficients (poisson with log link):
+              Estimate Std. Error z value Pr(>|z|)    
+(Intercept) -1.996e+00  8.148e-02 -24.499  < 2e-16 ***
+DriverAge   -1.058e-02  2.524e-03  -4.192 2.77e-05 ***
+CarAge      -4.652e-02  6.299e-03  -7.385 1.52e-13 ***
+Density      2.473e-05  6.907e-05   0.358   0.7203    
+powerFDEF   -2.395e-02  1.188e-01  -0.202   0.8402    
+powerFGH     2.122e-01  1.268e-01   1.674   0.0942 .  
+
+Zero-inflation model coefficients (binomial with logit link):
+              Estimate Std. Error z value Pr(>|z|)
+(Intercept)  1.1589640  0.7500819   1.545    0.122
+DriverAge   -0.0186722  0.0125234  -1.491    0.136
+CarAge      -0.3304067         NA      NA       NA
+Density     -0.0001784         NA      NA       NA
+powerFDEF   -0.0305862  0.6192486  -0.049    0.961
+powerFGH     0.7073295  0.6114132   1.157    0.247
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Number of iterations in BFGS optimization: 66 
+Log-likelihood: -4922 on 12 Df
+
+ 
+ Now attempting maximization number 5 
+--------------------------- 
+
+Call:
+zeroinfl(formula = formulaZP, data = i$data, dist = "poisson", zipModelE = i)
+
+Pearson residuals:
+
+ 
+ Now attempting maximization number 5 
+--------------------------- 
+
+Call:
+zeroinfl(formula = formulaZP, data = i$data, dist = "poisson", zipModelE = i)
+
+Pearson residuals:
+       Min         1Q     Median         3Q        Max 
+-4.645e-01 -2.469e-01 -1.729e-01 -6.090e-09  6.881e+00 
+
+Count model coefficients (poisson with log link):
+             Estimate Std. Error z value Pr(>|z|)  
+(Intercept) -22.44002         NA      NA       NA  
+DriverAge     0.03105    0.03205   0.969   0.3327  
+CarAge        0.17641    0.09773   1.805   0.0711 .
+Density       0.03434         NA      NA       NA  
+powerFDEF    -0.30274    0.79336  -0.382   0.7028  
+powerFGH     -0.87164    0.86480  -1.008   0.3135  
+
+Zero-inflation model coefficients (binomial with logit link):
+            Estimate Std. Error z value Pr(>|z|)
+(Intercept)    1.785         NA      NA       NA
+DriverAge     -3.228      3.432  -0.940    0.347
+CarAge        33.893     36.021   0.941    0.347
+Density       -0.333         NA      NA       NA
+powerFDEF     44.632    136.775   0.326    0.744
+powerFGH    -157.880    203.415  -0.776    0.438
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
+
+Number of iterations in BFGS optimization: 138 

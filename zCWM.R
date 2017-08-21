@@ -33,7 +33,7 @@ load_book <- function(){
   CONTRACTS.f$NB  <- CONTRACTS.f$ClaimNb
   CONTRACTS.f <<- CONTRACTS.f
 }
-declare_g <- function(data){
+   declare_g <- function(data){
   AGECAR <<- data$AGECAR
   AGEDRIVER <<- data$AGEDRIVER
   Brand <<- data$Brand
@@ -106,9 +106,9 @@ zcwm <- function(data, formulaZP, np){
   data.z$NB <<- as.integer(data.z$NB <= 0) 
   
   
-  cat('Beginning Partitioning using Cwm')
-  cat('--------------------------------')
-  cat(' ')
+  cat('Beginning Partitioning using Cwm','\n')
+  cat('--------------------------------','\n')
+  cat(' \n')
   
   #First Partition of space. (Poisson) 
   
@@ -116,7 +116,7 @@ zcwm <- function(data, formulaZP, np){
     cwm_poisson <<- cwm(formulaY = formulaZP,
                       data= data,
                       familyY = poisson(link="log"),
-                      Xnorm = cbind(DriverAge,CarAge,Density),
+                      Xnorm = cbind(DriverAge,CarAge,log(Density),
                       modelXnorm = "EVV",
                       k = 1:np)
   
@@ -129,7 +129,7 @@ zcwm <- function(data, formulaZP, np){
   
   cwm_binomial <<- cwm(formulaY = formulaZP,
                        data = data.z,
-                       Xnorm = cbind(DriverAge,CarAge,Density),
+                       Xnorm = cbind(DriverAge,CarAge,log(Density)),
                        familyY = binomial(link = "logit"),
                        modelXnorm = "VVI",
                        k = 1:np)
@@ -192,15 +192,15 @@ zcwm <- function(data, formulaZP, np){
   
     
     
-  print(                 )
-  print(                  )
-  print(paste("Now attempting maximization number",counter))
-  print("---------------------------")
+  cat(    '\n '             )
+  cat(  '\n '                )
+  cat(paste("Now attempting maximization number",counter), '\n')
+  cat("---------------------------",'\n')
     
   
   
     
- tryCatch({    holdModel <-  z_mk1(formula = formulaZP, 
+ tryCatch({holdModel <-  zeroinfl(formula = formulaZP, 
           zipModelE = i,
           data = i$data,
           dist = "poisson")    
@@ -210,12 +210,9 @@ zcwm <- function(data, formulaZP, np){
   
   counter <- counter + 1
   assign(paste('zeroNikT', counter,sep=''), holdModel)
- },error = function(){})
-  
-  
-  
-  
-  }
+ },error = function(e) NA)
+
+}
   
   
 
