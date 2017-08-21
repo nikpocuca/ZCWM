@@ -6,7 +6,7 @@
 # The following is code written using two libraries and their respective dependencies.
 # If you had not yet installed them, please do so now, run the following function.
 
-initFunctions <- function(){
+initLibrary <- function(){
 
   install.packages('flexCWM')
   install.packages('pscl')
@@ -96,7 +96,7 @@ fregzi <- NB ~ DriverAge + CarAge + Density + powerF
 
 
 #Beginning of zwm function 
-zcwm <- function(data, np){
+zcwm <- function(data, formulaZP, np){
   
   
   #initializations of zero space.
@@ -104,9 +104,11 @@ zcwm <- function(data, np){
   data.z$NB <<- as.integer(data.z$NB <= 0) 
   
   
-  print("Beginning Partitioning using Cwm")
+  print('Beginning Partitioning using Cwm')
   #First Partition of space. (Poisson) 
-  cwm_poisson <<- cwm(formulaY = fregzi,
+  
+  dclareCWM <- function(){
+    cwm_poisson <<- cwm(formulaY = formulaZP,
                       data= data,
                       familyY = poisson(link="log"),
                       Xnorm = cbind(DriverAge,CarAge,Density),
@@ -118,14 +120,16 @@ zcwm <- function(data, np){
   #Declare global for second partition. 
   declare_g(data.z)
   #Second Partition of space. (Binomial)
-  cwm_binomial <<- cwm(formulaY = fregzi,
+  cwm_binomial <<- cwm(formulaY = formulaZP,
                        data = data.z,
                        Xnorm = cbind(DriverAge,CarAge,Density),
                        familyY = binomial(link = "logit"),
                        modelXnorm = "VVI",
                        k = 1:np)
   
+  }
   
+  #dclareCWM()
   nPara <- length(getParGLM(cwm_binomial)[1])
   
   c_pois <<- getCluster(cwm_poisson)
@@ -163,150 +167,52 @@ zcwm <- function(data, np){
   
   
   
-  
-  
-  
   partSpace <- genData(dSpace = data_space, 
           pVectors = poissonVectors,
           bVectors = binomialVectors)
   # PARTITIONED SPACE IS COMPLETED 
   
- 
+  
+  
+  counter <- 1
+  result <<- c()
+  for(i in partSpace){
+  
+    
+    
+  print(                 )
+  print(                  )
+  print(paste("Now attempting maximization number",counter))
+  print("---------------------------")
+    
+    
+ tryCatch({    holdModel <-  z_mk1(formula = formulaZP, 
+          zipModelE = i,
+          data = i$data,
+          dist = "poisson")    
+  
+  print(summary(holdModel))
+    
+  
+  counter <- counter + 1
+  assign(paste('zeroNikT', counter,sep=''), holdModel)
+ },error = function(){})
+  
+  }
+  
   
 
-  #Generate object of models to be passed in. 
-  data_space_1 <<- data_space[data_space$partitions == 1,]
-  
-  zipModel_1 <<- list(
-  data = data_space_1,
-  p_vector = pois_split[data_space_1$c_pois[1]],
-  b_vector = bin_split[data_space_1$c_bin[1]]
-  )
-  
-  
-  data_space_2 <<- data_space[data_space$partitions == 2,]
-  zipModel_2 <<- list(
-    data = data_space_2,
-    p_vector = pois_split[data_space_2$c_pois[1]],
-    b_vector = bin_split[data_space_2$c_bin[1]]
-  )
-  
-  data_space_3 <<- data_space[data_space$partitions == 3,]
-  zipModel_3 <<- list(
-    data = data_space_3,
-    p_vector = pois_split[data_space_3$c_pois[1]],
-    b_vector = bin_split[data_space_3$c_bin[1]]
-  )
-  
-  data_space_4 <<- data_space[data_space$partitions == 4,]
-  zipModel_4 <<- list(
-    data = data_space_4,
-    p_vector = pois_split[data_space_4$c_pois[1]],
-    b_vector = bin_split[data_space_4$c_bin[1]]
-  )
-  
-  data_space_5 <<- data_space[data_space$partitions == 5,]
-  zipModel_5 <<- list(
-    data = data_space_5,
-    p_vector = pois_split[data_space_5$c_pois[1]],
-    b_vector = bin_split[data_space_5$c_bin[1]]
-  )
-  
-  data_space_6 <<- data_space[data_space$partitions == 6,]
-  zipModel_6 <<- list(
-    data = data_space_6,
-    p_vector = pois_split[data_space_6$c_pois[1]],
-    b_vector = bin_split[data_space_6$c_bin[1]]
-  )
-  
   #Begin the Zero Inflated Poisson Here. 
-  
-  result <- list(
-    space = data,
-    space.z = data.z$NB,
-    cwm_bin = cwm_binomial,
-    cwm_pois = cwm_poisson)
   class(result) <- "zcwm"
   
   return(result)
 } 
 #End of zcwm function
 
-zero <- zcwm(c_24)
+zeroTEST <- zcwm(data = c_24,
+             formulaZP = fregzi,
+             3)
 
-
-
-
-zero_1 <- zeroinfl(formula = fregzi, 
-                     data = zipModel_1$data,
-                     dist = "poisson")
-
-
-zero_2 <- zeroinfl(formula = fregzi, 
-                   data = zipModel_2$data,
-                   dist = "poisson")
-
-
-zero_3 <- zeroinfl(formula = fregzi, 
-                   data = zipModel_3$data,
-                   dist = "poisson")
-
-zero_4 <- zeroinfl(formula = fregzi, 
-                   data = zipModel_4$data,
-                   dist = "poisson")
-
-zero_5 <- zeroinfl(formula = fregzi, 
-                    data = zipModel_5$data,
-                    dist = "poisson")
-
-zero_6 <- zeroinfl(formula = fregzi, 
-                   data = zipModel_6$data,
-                   dist = "poisson")
-
-summary(zero_1)
-summary(zero_2)
-summary(zero_3)
-summary(zero_4)
-summary(zero_5)
-summary(zero_6)
-
-#mine
-
-zeroNik_1 <- z_mk1(formula = fregzi, 
-                   zipModelE = zipModel_1,
-                   data = zipModel_1$data,
-                   dist = "poisson")
-zeroNik_2 <- z_mk1(formula = fregzi,
-                   zipModelE = zipModel_2,
-                   data = zipModel_2$data,
-                   dist = "poisson")
-zeroNik_3 <- z_mk1(formula = fregzi,
-                   zipModelE = zipModel_3,
-                   data = zipModel_3$data,
-                   dist = "poisson")
-
-zeroNik_4 <- z_mk1(formula = fregzi, 
-                   zipModelE = zipModel_4,
-                   data = zipModel_4$data,
-                   dist = "poisson")
-
-zeroNik_5 <- z_mk1(formula = fregzi, 
-                   zipModelE = zipModel_5,
-                   data = zipModel_5$data,
-                   dist = "poisson")
-
-zeroNik_6 <- z_mk1(formula = fregzi, 
-                   zipModelE = zipModel_6,
-                   data = zipModel_6$data,
-                   dist = "poisson")
-
-
-summary(zeroNik_1)
-summary(zeroNik_2)
-summary(zeroNik_3)
-summary(zeroNik_4)
-summary(zeroNik_5)
-summary(zeroNik_6)
 
 
 
@@ -352,6 +258,76 @@ summary(zeroNik_6)
 #fit_cuts <<- cbind(fit,fit_z)
 
 
+
+
+zeroTEST <- zcwm(data = c_24,
+                 formulaZP = fregzi)
+
+
+
+
+zero_1 <- zeroinfl(formula = fregzi, 
+                   data = zipModel_1$data,
+                   dist = "poisson")
+
+
+zero_2 <- zeroinfl(formula = fregzi, 
+                   data = zipModel_2$data,
+                   dist = "poisson")
+
+
+zero_3 <- zeroinfl(formula = fregzi, 
+                   data = zipModel_3$data,
+                   dist = "poisson")
+
+zero_4 <- zeroinfl(formula = fregzi, 
+                   data = zipModel_4$data,
+                   dist = "poisson")
+
+zero_5 <- zeroinfl(formula = fregzi, 
+                   data = zipModel_5$data,
+                   dist = "poisson")
+
+zero_6 <- zeroinfl(formula = fregzi, 
+                   data = zipModel_6$data,
+                   dist = "poisson")
+
+summary(zero_1)
+summary(zero_2)
+summary(zero_3)
+summary(zero_4)
+summary(zero_5)
+summary(zero_6)
+
+#mine
+
+zeroNik_1 <- z_mk1(formula = fregzi, 
+                   zipModelE = zipModel_1,
+                   data = zipModel_1$data,
+                   dist = "poisson")
+zeroNik_2 <- z_mk1(formula = fregzi,
+                   zipModelE = zipModel_2,
+                   data = zipModel_2$data,
+                   dist = "poisson")
+zeroNik_3 <- z_mk1(formula = fregzi,
+                   zipModelE = zipModel_3,
+                   data = zipModel_3$data,
+                   dist = "poisson")
+
+zeroNik_4 <- z_mk1(formula = fregzi, 
+                   zipModelE = zipModel_4,
+                   data = zipModel_4$data,
+                   dist = "poisson")
+
+zeroNik_5 <- z_mk1(formula = fregzi, 
+                   zipModelE = zipModel_5,
+                   data = zipModel_5$data,
+                   dist = "poisson")
+
+zeroNik_6 <- z_mk1(formula = fregzi, 
+                   zipModelE = zipModel_6,
+                   data = zipModel_6$data,
+                   dist = "poisson")
 
 
 

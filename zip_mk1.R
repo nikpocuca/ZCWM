@@ -61,20 +61,8 @@ z_mk1 <- function (formula, zipModelE, data, subset, na.action, weights, offset,
                                                      loglik1[Y1])
     loglik
   }
-  ziNegBin <- function(parms) {
-    mu <- as.vector(exp(X %*% parms[1:kx] + offsetx))
-    phi <- as.vector(linkinv(Z %*% parms[(kx + 1):(kx + kz)] + 
-                               offsetz))
-    theta <- exp(parms[(kx + kz) + 1])
-    loglik0 <- log(phi + exp(log(1 - phi) + suppressWarnings(dnbinom(0, 
-                                                                     size = theta, mu = mu, log = TRUE))))
-    loglik1 <- log(1 - phi) + suppressWarnings(dnbinom(Y, 
-                                                       size = theta, mu = mu, log = TRUE))
-    loglik <- sum(weights[Y0] * loglik0[Y0]) + sum(weights[Y1] * 
-                                                     loglik1[Y1])
-    loglik
-  }
-  ziGeom <- function(parms) ziNegBin(c(parms, 0))
+ 
+ 
   gradPoisson <- function(parms) {
     eta <- as.vector(X %*% parms[1:kx] + offsetx)
     mu <- exp(eta)
@@ -90,43 +78,8 @@ z_mk1 <- function (formula, zipModelE, data, subset, na.action, weights, offset,
     colSums(cbind(wres_count * weights * X, wres_zero * weights * 
                     Z))
   }
-  gradGeom <- function(parms) {
-    eta <- as.vector(X %*% parms[1:kx] + offsetx)
-    mu <- exp(eta)
-    etaz <- as.vector(Z %*% parms[(kx + 1):(kx + kz)] + offsetz)
-    muz <- linkinv(etaz)
-    clogdens0 <- dnbinom(0, size = 1, mu = mu, log = TRUE)
-    dens0 <- muz * (1 - as.numeric(Y1)) + exp(log(1 - muz) + 
-                                                clogdens0)
-    wres_count <- ifelse(Y1, Y - mu * (Y + 1)/(mu + 1), -exp(-log(dens0) + 
-                                                               log(1 - muz) + clogdens0 - log(mu + 1) + log(mu)))
-    wres_zero <- ifelse(Y1, -1/(1 - muz) * linkobj$mu.eta(etaz), 
-                        (linkobj$mu.eta(etaz) - exp(clogdens0) * linkobj$mu.eta(etaz))/dens0)
-    colSums(cbind(wres_count * weights * X, wres_zero * weights * 
-                    Z))
-  }
-  gradNegBin <- function(parms) {
-    eta <- as.vector(X %*% parms[1:kx] + offsetx)
-    mu <- exp(eta)
-    etaz <- as.vector(Z %*% parms[(kx + 1):(kx + kz)] + offsetz)
-    muz <- linkinv(etaz)
-    theta <- exp(parms[(kx + kz) + 1])
-    clogdens0 <- dnbinom(0, size = theta, mu = mu, log = TRUE)
-    dens0 <- muz * (1 - as.numeric(Y1)) + exp(log(1 - muz) + 
-                                                clogdens0)
-    wres_count <- ifelse(Y1, Y - mu * (Y + theta)/(mu + theta), 
-                         -exp(-log(dens0) + log(1 - muz) + clogdens0 + log(theta) - 
-                                log(mu + theta) + log(mu)))
-    wres_zero <- ifelse(Y1, -1/(1 - muz) * linkobj$mu.eta(etaz), 
-                        (linkobj$mu.eta(etaz) - exp(clogdens0) * linkobj$mu.eta(etaz))/dens0)
-    wres_theta <- theta * ifelse(Y1, digamma(Y + theta) - 
-                                   digamma(theta) + log(theta) - log(mu + theta) + 1 - 
-                                   (Y + theta)/(mu + theta), exp(-log(dens0) + log(1 - 
-                                                                                     muz) + clogdens0) * (log(theta) - log(mu + theta) + 
-                                                                                                            1 - theta/(mu + theta)))
-    colSums(cbind(wres_count * weights * X, wres_zero * weights * 
-                    Z, wres_theta))
-  }
+ 
+ 
   dist <- match.arg(dist)
   loglikfun <- switch(dist, poisson = ziPoisson, geometric = ziGeom, 
                       negbin = ziNegBin)
@@ -259,98 +212,7 @@ z_mk1 <- function (formula, zipModelE, data, subset, na.action, weights, offset,
     if (!valid) 
       start <- NULL
   }
-  if (is.null(start)) {
-    if (control$trace) 
-      cat("generating starting values...")
-    model_count <- glm.fit(X, Y, family = poisson(), weights = weights, 
-                           offset = offsetx)
-    model_zero <- glm.fit(Z, as.integer(Y0), weights = weights, 
-                          family = binomial(link = linkstr), offset = offsetz)
-    start <- list(count = model_count$coefficients, zero = model_zero$coefficients)
-    if (dist == "negbin") 
-      start$theta <- 1
-    if (control$EM & dist == "poisson") {
-      mui <- model_count$fitted
-      probi <- model_zero$fitted
-      probi <- probi/(probi + (1 - probi) * dpois(0, mui))
-      probi[Y1] <- 0
-      ll_new <- loglikfun(c(start$count, start$zero))
-      ll_old <- 2 * ll_new
-      while (abs((ll_old - ll_new)/ll_old) > control$reltol) {
-        ll_old <- ll_new
-        model_count <- glm.fit(X, Y, weights = weights * 
-                                 (1 - probi), offset = offsetx, family = poisson(), 
-                               start = start$count)
-        model_zero <- suppressWarnings(glm.fit(Z, probi, 
-                                               weights = weights, offset = offsetz, family = binomial(link = linkstr), 
-                                               start = start$zero))
-        mui <- model_count$fitted
-        probi <- model_zero$fitted
-        probi <- probi/(probi + (1 - probi) * dpois(0, 
-                                                    mui))
-        probi[Y1] <- 0
-        start <- list(count = model_count$coefficients, 
-                      zero = model_zero$coefficients)
-        ll_new <- loglikfun(c(start$count, start$zero))
-      }
-    }
-    if (control$EM & dist == "geometric") {
-      mui <- model_count$fitted
-      probi <- model_zero$fitted
-      probi <- probi/(probi + (1 - probi) * dnbinom(0, 
-                                                    size = 1, mu = mui))
-      probi[Y1] <- 0
-      ll_new <- loglikfun(c(start$count, start$zero))
-      ll_old <- 2 * ll_new
-      while (abs((ll_old - ll_new)/ll_old) > control$reltol) {
-        ll_old <- ll_new
-        model_count <- suppressWarnings(glm.fit(X, Y, 
-                                                weights = weights * (1 - probi), offset = offsetx, 
-                                                family = MASS::negative.binomial(1), start = start$count))
-        model_zero <- suppressWarnings(glm.fit(Z, probi, 
-                                               weights = weights, offset = offsetz, family = binomial(link = linkstr), 
-                                               start = start$zero))
-        start <- list(count = model_count$coefficients, 
-                      zero = model_zero$coefficients)
-        mui <- model_count$fitted
-        probi <- model_zero$fitted
-        probi <- probi/(probi + (1 - probi) * dnbinom(0, 
-                                                      size = 1, mu = mui))
-        probi[Y1] <- 0
-        ll_new <- loglikfun(c(start$count, start$zero))
-      }
-    }
-    if (control$EM & dist == "negbin") {
-      mui <- model_count$fitted
-      probi <- model_zero$fitted
-      probi <- probi/(probi + (1 - probi) * dnbinom(0, 
-                                                    size = start$theta, mu = mui))
-      probi[Y1] <- 0
-      ll_new <- loglikfun(c(start$count, start$zero, log(start$theta)))
-      ll_old <- 2 * ll_new
-      offset <- offsetx
-      while (abs((ll_old - ll_new)/ll_old) > control$reltol) {
-        ll_old <- ll_new
-        model_count <- suppressWarnings(glm.nb(Y ~ 0 + 
-                                                 X + offset(offset), weights = weights * (1 - 
-                                                                                            probi), start = start$count, init.theta = start$theta))
-        model_zero <- suppressWarnings(glm.fit(Z, probi, 
-                                               weights = weights, offset = offsetz, family = binomial(link = linkstr), 
-                                               start = start$zero))
-        start <- list(count = model_count$coefficients, 
-                      zero = model_zero$coefficients, theta = model_count$theta)
-        mui <- model_count$fitted
-        probi <- model_zero$fitted
-        probi <- probi/(probi + (1 - probi) * dnbinom(0, 
-                                                      size = start$theta, mu = mui))
-        probi[Y1] <- 0
-        ll_new <- loglikfun(c(start$count, start$zero, 
-                              log(start$theta)))
-      }
-    }
-    if (control$trace) 
-      cat("done\n")
-  }
+
   if (control$trace) 
     cat("calling optim() for ML estimation:\n")
   method <- control$method
@@ -358,8 +220,8 @@ z_mk1 <- function (formula, zipModelE, data, subset, na.action, weights, offset,
   ocontrol <- control
   
   storage <<- start
-  start$count <- as.double(unlist(zipModelE$p_vector))
-  start$zero <- as.double(unlist(zipModelE$b_vector))
+  start$count <- as.double(zipModelE$vectors$pVector)
+  start$zero <- as.double(zipModelE$vectors$bVector)
   
   #placeholder 
   
