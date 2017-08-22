@@ -53,6 +53,8 @@ load_book <- function(){
   POWER <<- data$POWER
   powerF <<- data$powerF
   Region <<- data$Region
+  logDENSITY <<- data$logDENSITY
+  
 }
 create24 <- function() {
   c_24 <<- CONTRACTS.f[CONTRACTS.f$Region=="R24",]
@@ -93,7 +95,7 @@ getResiduals <- function(object, ...){
 load_book()
 create24()
 declare_g(c_24)
-fregzi <- NB ~ DriverAge + CarAge + Density + powerF
+fregzi <- NB ~ DriverAge + CarAge + logDENSITY + powerF
 
 
 
@@ -116,7 +118,7 @@ zcwm <- function(data, formulaZP, np){
     cwm_poisson <<- cwm(formulaY = formulaZP,
                       data= data,
                       familyY = poisson(link="log"),
-                      Xnorm = cbind(DriverAge,CarAge,log(Density),
+                      Xnorm = cbind(DriverAge,CarAge,logDENSITY),
                       modelXnorm = "EVV",
                       k = 1:np)
   
@@ -129,7 +131,7 @@ zcwm <- function(data, formulaZP, np){
   
   cwm_binomial <<- cwm(formulaY = formulaZP,
                        data = data.z,
-                       Xnorm = cbind(DriverAge,CarAge,log(Density)),
+                       Xnorm = cbind(DriverAge,CarAge,logDENSITY),
                        familyY = binomial(link = "logit"),
                        modelXnorm = "VVI",
                        k = 1:np)
@@ -138,7 +140,7 @@ zcwm <- function(data, formulaZP, np){
   
   
   
-  dclareCWM()
+ # dclareCWM()
   
   
   
